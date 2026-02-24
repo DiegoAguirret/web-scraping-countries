@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 
 def limpiar_datos(texto):
 
@@ -33,7 +34,11 @@ df = pd.DataFrame(datos_crudos)
 
 df_filtrado = df[df["poblacion"] > 10000000].copy()
 
-df_final = df_filtrado.sort_values(by="poblacion", ascending=False)
+df_filtrado["densidad"] = (df_filtrado["poblacion"] / df_filtrado["area"]).round(2)
+
+df_filtrado["densidad"] = df_filtrado["densidad"].replace([np.inf,-np.inf],0)
+
+df_final = df_filtrado.sort_values(by="densidad", ascending=False)
 
 df_final.to_csv("paises_pandas.csv", index = False, sep=";", encoding="utf-8-sig")
 
